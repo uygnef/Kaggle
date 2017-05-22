@@ -4,6 +4,8 @@ wrote by Yu.
 '''
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
+
 
 def load_data():
     data = {}
@@ -12,13 +14,14 @@ def load_data():
     data['train'] = pd.read_csv("asset/train.csv")
     return data
 
+
 '''
 naive method to transfer non numeric feature to int.
 only assign each value(class) a number.
 @:param
-    df: dataframe
+    df: data frame
 @:return
-    df: transformed dataframe
+    df: transformed data frame
     
 '''
 def handle_non_numeric_data(df):
@@ -44,7 +47,21 @@ def handle_non_numeric_data(df):
             df[column] = list(map(convert_to_int, df[column]))
     return df
 
+
+'''
+split raw data frame to test and train.
+@:return
+    train features, test features, train result, test result.
+'''
+def dp_train_test_split(df, test_size = 0.2, random_state = 42):
+    y = df['price_doc']
+    df.drop('price_doc', 1, inplace=True)
+    return train_test_split(df,y, test_size=test_size, random_state=random_state)
+
+
 if __name__ == "__main___":
-    df = pd.read_csv("asset/train.csv")
+    df = pd.read_csv("asset/train.csv", skipinitialspace=True)
     df = handle_non_numeric_data(df)
     print(df.head())
+    train_x, test_x, train_y, test_y = dp_train_test_split(df)
+    print(len(train_x), len(test_x), len(train_y), len(test_y))
