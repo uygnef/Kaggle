@@ -45,6 +45,7 @@ only assign each value(class) a number.
     df: transformed data frame
     
 '''
+#TODO: find better value for each class
 def handle_non_numeric_data(df):
     columns = df.columns
 
@@ -54,9 +55,10 @@ def handle_non_numeric_data(df):
             return text_digits_vals[val]
 
         if df[column].dtype not in (np.int64, np.float64):
-            if column == 'timestamp':
-                df[column] = pd.to_datetime(pd.Series(df[column]))
-                continue
+            #TODO: trans date to int
+            # if column == 'timestamp':
+            #     df[column] = pd.to_datetime(pd.Series(df[column]))
+            #     continue
             column_contents = df[column].tolist()
             unique_elements = set(column_contents)
             x = 0
@@ -83,8 +85,9 @@ if __name__ == "__main__":
     df = pd.read_csv("asset/train.csv", skipinitialspace=True)
     train_x, test_x, train_y, test_y = pre_process(df)
     print(len(train_x), len(test_x), len(train_y), len(test_y))
-    print(train_x.head())
+    print(df.head())
     #check if has Nan value
     for i in df:
-        if df[i].isnull():
-            print(i)
+        if df[i].isnull().sum() != 0:
+            print(i, df[i].isnull().sum())
+
