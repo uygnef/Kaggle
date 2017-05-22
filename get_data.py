@@ -1,6 +1,6 @@
 '''
 pre process data.
-wrote by Yu.
+written by Yu.
 '''
 import pandas as pd
 import numpy as np
@@ -13,6 +13,27 @@ def load_data():
     data['test'] = pd.read_csv("asset/test.csv")
     data['train'] = pd.read_csv("asset/train.csv")
     return data
+
+
+#TODO: PCA, feature selection...
+def pre_process(df):
+    handle_non_numeric_data(df)
+    data_filling(df)
+    return df_train_test_split(df)
+
+
+
+'''
+naive approach to fill data. filling empty data with mean of this column.
+'''
+#TODO: filling with nearest value
+def data_filling(df):
+    for col in df:
+        try:
+            df[col].fillna(df[col].mean(), inplace=True)
+        except TypeError:
+            df[col].fillna(method='pad')
+            df[col].fillna(method='bfill')
 
 
 '''
@@ -45,7 +66,6 @@ def handle_non_numeric_data(df):
                     text_digits_vals[unique] = x
                     x += 1
             df[column] = list(map(convert_to_int, df[column]))
-    return df
 
 
 '''
@@ -53,15 +73,18 @@ split raw data frame to test and train.
 @:return
     train features, test features, train result, test result.
 '''
-def dp_train_test_split(df, test_size = 0.2, random_state = 42):
+def df_train_test_split(df, test_size = 0.2, random_state = 42):
     y = df['price_doc']
     df.drop('price_doc', 1, inplace=True)
     return train_test_split(df,y, test_size=test_size, random_state=random_state)
 
 
-if __name__ == "__main___":
+if __name__ == "__main__":
     df = pd.read_csv("asset/train.csv", skipinitialspace=True)
-    df = handle_non_numeric_data(df)
-    print(df.head())
-    train_x, test_x, train_y, test_y = dp_train_test_split(df)
+    train_x, test_x, train_y, test_y = pre_process(df)
     print(len(train_x), len(test_x), len(train_y), len(test_y))
+    print(train_x.head())
+    #check if has Nan value
+    for i in df:
+        if df[i].isnull():
+            print(i)
