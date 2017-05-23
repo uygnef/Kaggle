@@ -5,6 +5,7 @@ written by Yu.
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
 
 
 def load_data():
@@ -19,6 +20,12 @@ def load_data():
 def pre_process(df):
     handle_non_numeric_data(df)
     data_filling(df)
+
+    #copy from https://www.kaggle.com/bguberfain/naive-xgb-lb-0-317
+    # Add month-year
+
+
+
     return df_train_test_split(df)
 
 
@@ -28,6 +35,8 @@ naive approach to fill data. filling empty data with mean of this column.
 '''
 #TODO: filling with nearest value
 def data_filling(df):
+    df.loc[df['state'] == 33, 'state'] = df['state'].mode().iloc[0]
+    df.loc[df['build_year'] == 20052009, 'build_year'] = 2007
     for col in df:
         try:
             df[col].fillna(df[col].mean(), inplace=True)
@@ -47,27 +56,11 @@ only assign each value(class) a number.
 '''
 #TODO: find better value for each class
 def handle_non_numeric_data(df):
-    columns = df.columns
-
-    for column in columns:
-        text_digits_vals = {}
-        def convert_to_int(val):
-            return text_digits_vals[val]
-
-        if df[column].dtype not in (np.int64, np.float64):
-            #TODO: trans date to int
-            # if column == 'timestamp':
-            #     df[column] = pd.to_datetime(pd.Series(df[column]))
-            #     continue
-            column_contents = df[column].tolist()
-            unique_elements = set(column_contents)
-            x = 0
-            #assign a label to element
-            for unique in unique_elements:
-                if unique not in text_digits_vals:
-                    text_digits_vals[unique] = x
-                    x += 1
-            df[column] = list(map(convert_to_int, df[column]))
+    for c in df.columns:
+        if df[c].dtype == 'object':
+            lbl = preprocessing.LabelEncoder()
+            lbl.fit(list(df[c].values))
+            df[c] = lbl.transform(list(df[c].values))
 
 
 '''
@@ -77,12 +70,14 @@ split raw data frame to test and train.
 '''
 def df_train_test_split(df, test_size = 0.2, random_state = 42):
     y = df['price_doc']
-    df.drop('price_doc', 1, inplace=True)
+    #TODO: normalized timestamp
+    df.drop(['price_doc', 'id', 'timestamp'], 1, inplace=True)
+
     return train_test_split(df,y, test_size=test_size, random_state=random_state)
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("asset/train.csv", skipinitialspace=True)
+    df = pd.read_csv("asset/train.csv", skipinitialspace=True, parse_dates=['timestamp'])
     train_x, test_x, train_y, test_y = pre_process(df)
     print(len(train_x), len(test_x), len(train_y), len(test_y))
     print(df.head())
