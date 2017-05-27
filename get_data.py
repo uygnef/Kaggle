@@ -21,13 +21,14 @@ def pre_process(df):
     handle_non_numeric_data(df)
     data_filling(df)
 
-    #copy from https://www.kaggle.com/bguberfain/naive-xgb-lb-0-317
     # Add month-year
-
-
-
     return df_train_test_split(df)
 
+def pre_process_test(df):
+    handle_non_numeric_data(df)
+    data_filling(df)
+    df.drop(['id', 'timestamp'], 1, inplace=True)
+    return df
 
 
 '''

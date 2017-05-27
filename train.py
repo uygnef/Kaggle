@@ -57,10 +57,14 @@ def XGB(x_train, y_train, x_test):
 
 if __name__ == "__main__":
     df = pd.read_csv("asset/train.csv", skipinitialspace=True, parse_dates=['timestamp'])
+    test_pd = pd.read_csv("asset/test.csv", skipinitialspace=True, parse_dates=['timestamp'])
+
+    test = get_data.pre_process_test(test_pd)
     train_X, test_X, train_y, test_y = get_data.pre_process(df)
    # print(df.head())
-    result = XGB(train_X, train_y, test_X)
+    result = XGB(train_X, train_y, test)
+
     file = open("1", 'wb')
-    pickle.dump((test_y.head(), result.head()), file)
+    pickle.dump(result, file)
 
    # print(df.head())
