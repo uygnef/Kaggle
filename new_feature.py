@@ -9,6 +9,11 @@ train = data['train']
 def rate_preschool(data):
     data['preschool_quota'].fillna(0)
     data['ratio_preschool'] = data['preschool_quota'] / data['school_quota']
-    data['age_at_sale'] = data['']
 
-print(train.head())
+def region_average_high(data):
+    mean_height = train.groupby('sub_area')['max_floor'].mean()
+    
+
+print()
+
+
