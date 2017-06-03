@@ -11,9 +11,16 @@ def rate_preschool(data):
     data['ratio_preschool'] = data['preschool_quota'] / data['school_quota']
 
 def region_average_high(data):
-    mean_height = train.groupby('sub_area')['max_floor'].mean()
-    
+    data['max_floor'].fillna(1)
+    mean_height =  data.groupby('sub_area')['max_floor'].mean()
+    mean_height = mean_height.to_frame().reset_index()
 
-print()
+    mean_height.columns = ['sub_area', 'average_height']
+    result = data.merge(mean_height, on='sub_area')
+    return result
+
+train = region_average_high(train)
+
+print(train.shape)
 
 
