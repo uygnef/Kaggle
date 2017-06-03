@@ -8,6 +8,7 @@ import numpy as np
 import xgboost as xgb
 import matplotlib.pyplot as plt
 import pickle
+import new_feature
 
 
 #https://www.kaggle.com/optidatascience/use-partial-pca-for-collinearity-lb-0-328-w-xgb/notebook/notebook
@@ -60,7 +61,11 @@ def XGB(x_train, y_train, x_test):
 
 if __name__ == "__main__":
     df = pd.read_csv("asset/train.csv", skipinitialspace=True, parse_dates=['timestamp'])
+    df = new_feature.get_new_feature(df, "train")
+
     test_pd = pd.read_csv("asset/test.csv", skipinitialspace=True, parse_dates=['timestamp'])
+    test_pd = new_feature.get_new_feature(test_pd, "test")
+
     test_id = test_pd['id']
     test_id = test_id.to_frame()
     test = get_data.pre_process_test(test_pd)
