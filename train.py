@@ -11,7 +11,7 @@ import pickle
 
 
 #https://www.kaggle.com/optidatascience/use-partial-pca-for-collinearity-lb-0-328-w-xgb/notebook/notebook
-#TODO: complete PCA.
+#PCA did not lead to improve for xgboost.
 # def PCA(df):
 #     import bisect
 #     internal_chars = ['full_sq', 'life_sq', 'floor', 'max_floor', 'build_year', 'num_room', 'kitch_sq', 'state']
@@ -50,6 +50,9 @@ def XGB(x_train, y_train, x_test):
     num_boost_rounds = len(cv_output)
     model = xgb.train(dict(xgb_params, silent=0), dtrain, num_boost_round=num_boost_rounds)
 
+    file = open("xgb_model", 'wb')
+    pickle.dump(model , file)
+
     y_predict = model.predict(dtest)
     output = pd.DataFrame({'price_doc': y_predict})
     print(output.head())
@@ -58,13 +61,16 @@ def XGB(x_train, y_train, x_test):
 if __name__ == "__main__":
     df = pd.read_csv("asset/train.csv", skipinitialspace=True, parse_dates=['timestamp'])
     test_pd = pd.read_csv("asset/test.csv", skipinitialspace=True, parse_dates=['timestamp'])
-
+    test_id = test_pd['id']
+    test_id = test_id.to_frame()
     test = get_data.pre_process_test(test_pd)
+
     train_X, test_X, train_y, test_y = get_data.pre_process(df)
    # print(df.head())
     result = XGB(train_X, train_y, test)
 
+
     file = open("1", 'wb')
-    pickle.dump(result, file)
+    pickle.dump(test_id.join(result) , file)
 
    # print(df.head())
