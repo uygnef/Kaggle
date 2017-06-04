@@ -61,9 +61,11 @@ def XGB(x_train, y_train, x_test):
 
 if __name__ == "__main__":
     df = pd.read_csv("asset/train.csv", skipinitialspace=True, parse_dates=['timestamp'])
-    df = new_feature.get_new_feature(df, "train")
-
     test_pd = pd.read_csv("asset/test.csv", skipinitialspace=True, parse_dates=['timestamp'])
+    get_data.data_cleaning(df, test_pd)
+    get_data.feature_engineering(df, test_pd)
+
+    df = new_feature.get_new_feature(df, "train")
     test_pd = new_feature.get_new_feature(test_pd, "test")
 
     test_id = test_pd['id']
